@@ -1,64 +1,43 @@
-# 🚀 Tech Challenge 2 - Arquitetura de Microsserviços e Cloud
+# Tech Challenge - Fase 3 | ToggleMaster
 
-Este repositório contém a implementação do **Tech Challenge 2** (FIAP), consistindo em uma arquitetura de microsserviços orientada a eventos, conteinerizada com Docker e orquestrada em ambiente Kubernetes (Amazon EKS).
-
----
-
-## 📋 Sobre o Projeto
-
-O sistema gerencia autenticação, avaliação, segmentação e *feature flags* de forma distribuída, enviando dados de auditoria e telemetria de forma assíncrona para processamento analítico.
+Este repositório contém o código-fonte dos microsserviços, a infraestrutura como código (IaC), os manifestos de orquestração Kubernetes e os pipelines de CI/CD DevSecOps para o projeto **ToggleMaster**.
 
 ---
 
-## 🏗️ Arquitetura dos Microsserviços
+## 🏗️ Arquitetura e Tecnologias
 
-O ecossistema é composto por cinco microsserviços principais:
-
-1. **`auth-service` (Go):** Responsável pela autenticação, gestão de usuários e segurança.
-2. **`evaluation-service` (Go):** Responsável por avaliar regras e estados de *feature flags*.
-3. **`flag-service` (Python / Flask):** Gerenciamento e controle das *flags*.
-4. **`targeting-service` (Python):** Serviço de segmentação de público-alvo.
-5. **`analytics-service` (Python):** Worker assíncrono que consome mensagens de uma fila SQS e persiste dados consolidados no DynamoDB.
-
----
-
-## 💾 Camada de Dados e Mensageria
-
-* **Amazon RDS (PostgreSQL):** Banco relacional transacional para dados consistentes.
-* **Amazon ElastiCache (Redis):** Cache em memória de alta performance para consulta rápida de estados.
-* **Amazon SQS (`techchallenge2-queue`):** Fila de mensagens para comunicação assíncrona.
-* **Amazon DynamoDB (`ToggleMasterAnalytics`):** Banco NoSQL otimizado para alta taxa de gravação de telemetria.
+* **Cloud Provider:** AWS (EKS, RDS PostgreSQL, ElastiCache Redis, DynamoDB, SQS, ECR)
+* **Infraestrutura como Código (IaC):** Terraform
+* **Orquestração de Contêineres:** Kubernetes (AWS EKS)
+* **Estratégia de Deploy (GitOps):** ArgoCD
+* **DevSecOps & CI/CD:** GitHub Actions com escaneamento de vulnerabilidades via **Trivy** e **Bandit**
+* **Microsserviços:**
+  * `auth-service` (Go) — Autenticação e gestão de acessos
+  * `flag-service` (Python) — Gerenciamento de Feature Flags
+  * `targeting-service` (Python) — Regras de segmentação de usuários
+  * `evaluation-service` (Go) — Avaliação de flags com cache em Redis e envio de eventos via SQS
+  * `analytics-service` (Python) — Consumidor de filas SQS com persistência no DynamoDB
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 📁 Estrutura do Repositório
 
-* **Linguagens:** Go e Python (Flask)
-* **Containerização:** Docker & Docker Compose
-* **Orquestração:** Kubernetes (Amazon EKS), Ingress Controller, HPA (Horizontal Pod Autoscaler)
-* **Cloud:** AWS (RDS, DynamoDB, SQS, ALB)
-
----
-
-## 🚀 Como Executar Localmente via Docker Compose
-
-Certifique-se de ter o Docker e o Docker Compose instalados na sua máquina.
-
-1. Clone o repositório:
-
-   git clone [https://github.com/VVelloso94/techchallenge2.git](https://github.com/VVelloso94/techchallenge2.git)
-   cd techchallenge2
-
-2. Suba os containers ignorando o cache, se necessário:
-
-docker compose build --no-cache && docker compose up
-
-Estrutura do Repositório
-
-├── auth-service/         # Microsserviço de Autenticação (Go)
-├── evaluation-service/   # Microsserviço de Avaliação (Go)
-├── flag-service/         # Microsserviço de Feature Flags (Python)
-├── targeting-service/    # Microsserviço de Segmentação (Python)
-├── analytics-service/    # Microsserviço de Analytics e SQS (Python)
-├── docker-compose.yml    # Orquestração local dos serviços
-└── README.md             # Documentação do projeto
+```text
+techchallenge3/
+├── .github/workflows/    # Pipelines de CI/CD e testes DevSecOps
+├── terraform/            # Módulos HCL para provisionamento na AWS
+├── k8s/                  # Manifestos K8s (Deployments, Services, ConfigMaps, Ingress e ArgoCD)
+│   ├── analytics-service/
+│   ├── auth-service/
+│   ├── evaluation-service/
+│   ├── flag-service/
+│   ├── targeting-service/
+│   ├── argocd-app.yaml
+│   ├── ingress.yaml
+│   ├── namespace.yaml
+│   └── secrets.yaml
+├── analytics-service/    # Código-fonte Python e Dockerfile
+├── auth-service/         # Código-fonte Go e Dockerfile
+├── evaluation-service/   # Código-fonte Go e Dockerfile
+├── flag-service/         # Código-fonte Python e Dockerfile
+└── targeting-service/    # Código-fonte Python e Dockerfile
