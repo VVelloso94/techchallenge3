@@ -1,0 +1,218 @@
+networks:
+  microservices-net:
+    driver: bridge
+
+volumes:
+  postgres_auth_data:
+    driver: local
+  postgres_flags_data:
+    driver: local
+  redis_data:
+    driver: local
+  dynamodb_data:
+    driver: local
+
+services:
+  # ==========================================
+  # BANCOS DE DADOS & SERVIÇOS DE INFRAESTRUTURA
+  # ==========================================
+
+  # PostgreSQL para o auth-service
+  db-auth:
+    restart: unless-stopped
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: auth_secure_password
+      POSTGRES_DB: auth_db
+    ports:
+      - "5431:5432" # Não conflitar com o db-flags
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d auth_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL para o flag-service e targeting-service
+  db-flags:
+    restart: unless-stopped
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: flags_secure_password
+      POSTGRES_DB: flags_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_flags_data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d flags_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis para o evaluation-service
+  redis-evaluation:
+    restart: unless-stopped
+    image: redis:7-alpine
+    command: redis-server --save 60 1 --loglevel warning
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # DynamoDB Local para o analytics-service
+  dynamodb-local:
+    restart: unless-stopped
+    image: amazon/dynamodb-local:latest
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /data"
+    user: root
+    ports:
+      - "8000:8000"
+    volumes:
+      - dynamodb_data:/data
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8000/shell/ || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+
+  # ==========================================
+  # MICROSERVIÇOS
+  # ==========================================
+
+  # auth-service (Go)
+  auth-service:
+    restart: unless-stopped
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - PORT=8080
+      - DB_HOST=db-auth
+      - DB_PORT=5432 # Porta Docker
+      - DB_USER=postgres
+      - DB_PASSWORD=auth_secure_password
+      - DB_NAME=auth_db
+      - DATABASE_URL=postgres://postgres:auth_secure_password@db-auth:5432/auth_db?sslmode=disable
+      - MASTER_KEY=auth_service_login
+    depends_on:
+      db-auth:
+        condition: service_healthy
+    networks:
+      - microservices-net
+
+  # flag-service (Python)
+  flag-service:
+    restart: unless-stopped
+    build:
+      context: ./flag-service
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8000"
+    environment:
+      - PORT=8000
+      - DB_HOST=db-flags
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=flags_secure_password
+      - DB_NAME=flags_db
+      - DATABASE_URL=postgres://postgres:flags_secure_password@db-flags:5432/flags_db?sslmode=disable
+      - AUTH_SERVICE_URL=http://auth-service:8080
+    depends_on:
+      db-flags:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s = socket.socket(); s.connect(('localhost', 8000))"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - microservices-net
+
+  # targeting-service (Python)
+  targeting-service:
+    restart: unless-stopped
+    build:
+      context: ./targeting-service
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8000"
+    environment:
+      - PORT=8000
+      - DB_HOST=db-flags
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=flags_secure_password
+      - DB_NAME=flags_db
+      - DATABASE_URL=postgres://postgres:flags_secure_password@db-flags:5432/flags_db?sslmode=disable
+      - AUTH_SERVICE_URL=http://auth-service:8080
+    depends_on:
+      db-flags:
+        condition: service_healthy
+    networks:
+      - microservices-net
+
+  # evaluation-service (Go)
+  evaluation-service:
+    restart: unless-stopped
+    build:
+      context: ./evaluation-service
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8080"
+    environment:
+      - PORT=8080
+      - REDIS_HOST=redis-evaluation
+      - REDIS_URL=redis://techchallenge2-redis-evaluation-1:6379
+      - FLAG_SERVICE_URL=http://flag-service:8000
+      - REDIS_PORT=6379
+      - TARGETING_SERVICE_URL=http://targeting-service:8000
+    depends_on:
+      redis-evaluation:
+        condition: service_healthy
+      flag-service:  
+        condition: service_healthy
+    networks:
+      - microservices-net
+
+  # analytics-service (Python)
+  analytics-service:
+    restart: unless-stopped
+    build:
+      context: ./analytics-service
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8000"
+    environment:
+      - PORT=8000
+      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
+      - AWS_DYNAMODB_TABLE=analytics-table
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=local_mock_key
+      - AWS_SECRET_ACCESS_KEY=local_mock_secret
+      - AWS_SQS_URL=http://localhost:4566/000000000000/analytics-queue
+    depends_on:
+      dynamodb-local:
+        condition: service_started
+    networks:
+      - microservices-net

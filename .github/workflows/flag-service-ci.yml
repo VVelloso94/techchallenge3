@@ -1,0 +1,135 @@
+name: CI / DevSecOps - Python Service
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'flag-service/**'
+      - '.github/workflows/flag-service-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'flag-service/**'
+
+env:
+  AWS_REGION: us-east-1
+  SERVICE_NAME: flag-service
+
+jobs:
+  lint-and-test:
+    name: 1. Build, Test & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies & Lint
+        run: |
+          cd ${{ env.SERVICE_NAME }}
+          pip install flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          # Stop build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+  security-scan:
+    name: 2. Security Scan (SAST & SCA)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # SAST - CODE SCAN - Bandit
+      - name: Run Bandit (SAST)
+        run: |
+          pip install bandit
+          bandit -r ${{ env.SERVICE_NAME }}/ -ll || true
+
+      # CONTAINER IMAGE SCAN - TRIVY (Dependencies)
+      - name: Run Trivy SCA Scan (Dependencies)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '${{ env.SERVICE_NAME }}'
+          exit-code: '1'
+          severity: 'CRITICAL'
+
+  build-and-push:
+    name: 3. Docker Build, Container Scan & ECR Push
+    needs: [lint-and-test, security-scan]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (Academy)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker Image
+        run: |
+          IMAGE_TAG=${{ github.sha }}
+          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+          docker build -t $ECR_REGISTRY/${{ env.SERVICE_NAME }}:$IMAGE_TAG ./${{ env.SERVICE_NAME }}
+          docker tag $ECR_REGISTRY/${{ env.SERVICE_NAME }}:$IMAGE_TAG $ECR_REGISTRY/${{ env.SERVICE_NAME }}:latest
+
+      # CONTAINER IMAGE SCAN - TRIVY
+      - name: Run Trivy Image Security Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ steps.login-ecr.outputs.registry }}/${{ env.SERVICE_NAME }}:${{ github.sha }}'
+          exit-code: '1'
+          severity: 'CRITICAL'
+
+      - name: Push Image to ECR
+        if: github.ref == 'refs/heads/main'
+        run: |
+          IMAGE_TAG=${{ github.sha }}
+          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+          docker push $ECR_REGISTRY/${{ env.SERVICE_NAME }}:$IMAGE_TAG
+          docker push $ECR_REGISTRY/${{ env.SERVICE_NAME }}:latest
+
+  gitops-update:
+    name: 4. GitOps - Update Manifest Tag
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Image Tag in GitOps Manifest
+        run: |
+          IMAGE_TAG=${{ github.sha }}
+          ECR_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          NEW_IMAGE="$ECR_REGISTRY/${{ env.SERVICE_NAME }}:$IMAGE_TAG"
+          
+          # Atualiza o campo image no deployment da pasta k8s/
+          sed -i "s|image: .*${{ env.SERVICE_NAME }}:.*|image: $NEW_IMAGE|g" k8s/${{ env.SERVICE_NAME }}/deployment.yaml
+
+      - name: Commit and Push Manifest Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add k8s/${{ env.SERVICE_NAME }}/deployment.yaml
+          git commit -m "ci(gitops): update image tag for ${{ env.SERVICE_NAME }} to ${{ github.sha }}" || exit 0
+          git push

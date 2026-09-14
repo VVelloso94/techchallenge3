@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: techchallenge-ingress
+  namespace: techchallenge
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /auth
+        pathType: Prefix
+        backend:
+          service:
+            name: auth-service
+            port:
+              number: 80
+      - path: /flags
+        pathType: Prefix
+        backend:
+          service:
+            name: flag-service
+            port:
+              number: 80
+      - path: /targeting
+        pathType: Prefix
+        backend:
+          service:
+            name: targeting-service
+            port:
+              number: 80
+      - path: /evaluate
+        pathType: Prefix
+        backend:
+          service:
+            name: evaluation-service
+            port:
+              number: 80
