@@ -49,3 +49,9 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: DB_AUTH_URL
+          env:
+            - name: MASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MASTER_KEY
