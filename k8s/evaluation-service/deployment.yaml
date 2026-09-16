@@ -50,3 +50,5 @@ spec:
               value: http://flag-service:8080
             - name: TARGETING_SERVICE_URL
               value: http://targeting-service:8080
+            - name: REDIS_URL
+              value: "redis://evaluation-redis.tlcbzq.0001.use1.cache.amazonaws.com:6379"
