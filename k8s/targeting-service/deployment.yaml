@@ -49,3 +49,7 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: DB_TARGETING_URL
+            - name: AUTH_SERVICE_URL
+              value: http://auth-service:8080
+            - name: FLAG_SERVICE_URL
+              value: http://flag-service:8080

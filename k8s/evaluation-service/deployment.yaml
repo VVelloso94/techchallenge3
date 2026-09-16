@@ -43,3 +43,10 @@ spec:
               port: 8080
             initialDelaySeconds: 15
             periodSeconds: 20
+          env:
+            - name: AUTH_SERVICE_URL
+              value: http://auth-service:8080
+            - name: FLAG_SERVICE_URL
+              value: http://flag-service:8080
+            - name: TARGETING_SERVICE_URL
+              value: http://targeting-service:8080

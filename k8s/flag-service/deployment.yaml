@@ -49,3 +49,5 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: DB_FLAG_URL
+            - name: AUTH_SERVICE_URL
+              value: http://auth-service:8080
