@@ -5,7 +5,7 @@ metadata:
   namespace: techchallenge
 data:
   PORT: "8080"
-  DB_HOST: "targeting-service-db.XXXXX.us-east-1.rds.amazonaws.com"
+  DB_HOST: "targeting-service-db.cjc2zfgxdo1d.us-east-1.rds.amazonaws.com"
   DB_PORT: "5432"
   DB_NAME: "targeting_db"
   DB_USER: "postgres"
