@@ -5,7 +5,7 @@ metadata:
   namespace: techchallenge
 data:
   PORT: "8004"
-  REDIS_HOST: "evaluation-redis.XXXXX.use1.cache.amazonaws.com"
+  REDIS_HOST: "redis://evaluation-redis.tlcbzq.0001.use1.cache.amazonaws.com:6379"
   REDIS_PORT: "6379"
   AWS_SQS_URL: "https://sqs.us-east-1.amazonaws.com/123456789012/techchallenge2-queue"
   AWS_REGION: "us-east-1"
