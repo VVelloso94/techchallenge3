@@ -4,12 +4,12 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'flag-service/**'
-      - '.github/workflows/flag-service-ci.yml'
+      - 'targeting-service/**'
+      - '.github/workflows/targeting-service-ci.yml'
   pull_request:
     branches: [ main ]
     paths:
-      - 'flag-service/**'
+      - 'targeting-service/**'
 
 env:
   AWS_REGION: us-east-1
