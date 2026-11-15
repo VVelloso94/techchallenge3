@@ -20,7 +20,7 @@ spec:
           image: 076974753162.dkr.ecr.us-east-1.amazonaws.com/evaluation-service:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 8004
           envFrom:
             - configMapRef:
                 name: evaluation-service-config
@@ -34,21 +34,21 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: 8080
+              port: 8004
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /health
-              port: 8080
+              port: 8004
             initialDelaySeconds: 15
             periodSeconds: 20
           env:
             - name: AUTH_SERVICE_URL
-              value: http://auth-service:8080
+              value: http://auth-service:8004
             - name: FLAG_SERVICE_URL
-              value: http://flag-service:8080
+              value: http://flag-service:8004
             - name: TARGETING_SERVICE_URL
-              value: http://targeting-service:8080
+              value: http://targeting-service:8004
             - name: REDIS_URL
               value: "redis://evaluation-redis.tlcbzq.0001.use1.cache.amazonaws.com:6379"
