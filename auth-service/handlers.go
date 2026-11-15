@@ -43,8 +43,19 @@ func (a *App) validateKeyHandler(w http.ResponseWriter, r *http.Request) {
 	var id int
 	err := a.DB.QueryRow("SELECT id FROM api_keys WHERE key_hash = $1 AND is_active = true", keyHash).Scan(&id)
 	if err != nil {
-		// Se não encontrar (sql.ErrNoRows), ou qualquer outro erro, a chave é inválida
-		log.Printf("Falha na validação da chave (hash: %s...): %v", keyHash[:6], err)
+		// Sanitiza os dados para mitigar G706 (Log Injection)
+		cleanHash := strings.ReplaceAll(strings.ReplaceAll(keyHash, "\n", ""), "\r", "")
+		hashPrefix := cleanHash
+		if len(hashPrefix) > 6 {
+			hashPrefix = hashPrefix[:6]
+		}
+		
+		var errStr string
+		if err != nil {
+			errStr = strings.ReplaceAll(strings.ReplaceAll(err.Error(), "\n", ""), "\r", "")
+		}
+
+		log.Printf("Falha na validação da chave (hash: %s...): %v", hashPrefix, errStr)
 		http.Error(w, "Chave de API inválida ou inativa", http.StatusUnauthorized)
 		return
 	}
@@ -95,10 +106,10 @@ func (a *App) createKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Nova chave criada com sucesso (ID: %d, Name: %s)", newID, req.Name)
 	w.WriteHeader(http.StatusCreated)
-_ = json.NewEncoder(w).Encode(CreateKeyResponse{
-    Name:    req.Name,
-    Key:     newKey,
-    Message: "Guarde esta chave com segurança! Você não poderá vê-la novamente.",
+	_ = json.NewEncoder(w).Encode(CreateKeyResponse{
+		Name:    req.Name,
+		Key:     newKey,
+		Message: "Guarde esta chave com segurança! Você não poderá vê-la novamente.",
 	})
 }
 
