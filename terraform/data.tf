@@ -1,7 +1,24 @@
-data "aws_iam_role" "labrole" {
-  name = "LabRole"
-}
-
 data "aws_availability_zones" "available" {
   state = "available"
+}
+
+
+resource "aws_iam_role" "eks_cluster_role" {
+  name = "techchallenge-eks-cluster-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "eks.amazonaws.com"
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
+  role       = aws_iam_role.eks_cluster_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }

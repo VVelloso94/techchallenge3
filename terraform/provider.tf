@@ -8,7 +8,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket       = "techchallenge-s3-tfstate"
+    bucket       = "s3-fiap-techchallenge-tfstate"
     key          = "phase3/terraform.tfstate"
     region       = "us-east-1"
     use_lockfile = true

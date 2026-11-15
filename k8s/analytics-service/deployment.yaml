@@ -20,26 +20,37 @@ spec:
           image: 076974753162.dkr.ecr.us-east-1.amazonaws.com/analytics-service:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 8005
           envFrom:
             - configMapRef:
                 name: analytics-service-config
-          resources:
-            requests:
-              memory: "128Mi"
-              cpu: "100m"
-            limits:
-              memory: "256Mi"
-              cpu: "250m"
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_SESSION_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: AWS_SESSION_TOKEN
+            - name: AWS_REGION
+              value: "us-east-1"
           readinessProbe:
             httpGet:
               path: /health
-              port: 8080
+              port: 8005
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /health
-              port: 8080
+              port: 8005
             initialDelaySeconds: 15
             periodSeconds: 20

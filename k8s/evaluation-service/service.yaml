@@ -6,8 +6,8 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 8004
+      targetPort: 8004
       protocol: TCP
   selector:
     app: evaluation-service
