@@ -4,12 +4,12 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'auth-service/**'
-      - '.github/workflows/auth-service-ci.yml'
+      - 'evaluation-service/**'
+      - '.github/workflows/evaluation-service-ci.yml'
   pull_request:
     branches: [ main ]
     paths:
-      - 'auth-service/**'
+      - 'evaluation-service/**'
 
 env:
   AWS_REGION: us-east-1
