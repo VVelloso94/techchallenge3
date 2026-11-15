@@ -1,3 +1,4 @@
+#workflow for CI/CD of the targeting-service Python service
 name: CI / DevSecOps - Python Service
 
 on:

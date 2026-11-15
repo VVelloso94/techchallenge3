@@ -1,3 +1,4 @@
+#workflow for CI/CD of the auth-service Go service
 name: CI / DevSecOps - Go Service
 
 on:

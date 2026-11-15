@@ -1,3 +1,4 @@
+#workflow for CI/CD of the evaluation-service Go service
 name: CI / DevSecOps - Go Service
 
 on:
