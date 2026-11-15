@@ -22,7 +22,7 @@ type CreateKeyResponse struct {
 // healthHandler é um simples endpoint de verificação de saúde
 func (a *App) healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(map[string]string{"status": "ok"})[cite: 22]
+	_ = json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }
 
 // validateKeyHandler verifica se uma chave de API (enviada via Header) é válida
@@ -51,7 +51,7 @@ func (a *App) validateKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Chave válida
 	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(map[string]string{"message": "Chave válida"})[cite: 22]
+	_ = json.NewEncoder(w).Encode(map[string]string{"message": "Chave válida"})
 }
 
 // createKeyHandler cria uma nova chave de API
@@ -99,7 +99,7 @@ _ = json.NewEncoder(w).Encode(CreateKeyResponse{
     Name:    req.Name,
     Key:     newKey,
     Message: "Guarde esta chave com segurança! Você não poderá vê-la novamente.",
-	})[cite: 22]
+	})
 }
 
 // --- Middleware ---
