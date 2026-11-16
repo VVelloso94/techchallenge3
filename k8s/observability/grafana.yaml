@@ -49,9 +49,8 @@ spec:
           subPath: datasources.yaml
       volumes:
       - name: datasources
-      - configMap:
+        configMap:
           name: grafana-datasources
-          name: datasources
 ---
 apiVersion: v1
 kind: Service
