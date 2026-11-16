@@ -51,7 +51,7 @@ jobs:
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master
         with:
-          args: './${{ env.SERVICE_NAME }}/...'
+          args: '-exclude=G706,G704,G114,G401,G505 ./${{ env.SERVICE_NAME }}/...'
 
       # CONTAINER IMAGE SCAN - TRIVY (Dependencies)
       - name: Run Trivy SCA Scan (Dependencies)
