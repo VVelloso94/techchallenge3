@@ -15,6 +15,7 @@ on:
 env:
   AWS_REGION: us-east-1
   SERVICE_NAME: flag-service
+  AWS_ACCOUNT_ID: "109420432998"
 
 jobs:
   lint-and-test:
@@ -123,11 +124,11 @@ jobs:
       - name: Update Image Tag in GitOps Manifest
         run: |
           IMAGE_TAG=${{ github.sha }}
-          ECR_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          ECR_REGISTRY="${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com"
           NEW_IMAGE="$ECR_REGISTRY/${{ env.SERVICE_NAME }}:$IMAGE_TAG"
-          
+          echo "Nova imagem gerada: $NEW_IMAGE"
           # Atualiza o campo image no deployment da pasta k8s/
-          sed -i "s|image: .*${{ env.SERVICE_NAME }}:.*|image: $NEW_IMAGE|g" k8s/${{ env.SERVICE_NAME }}/deployment.yaml
+          sed -i "s|image: .*.amazonaws.com/${{ env.SERVICE_NAME }}:.*|image: $NEW_IMAGE|g" k8s/${{ env.SERVICE_NAME }}/deployment.yaml
 
       - name: Commit and Push Manifest Changes
         run: |
