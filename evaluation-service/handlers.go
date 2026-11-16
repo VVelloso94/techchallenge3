@@ -56,4 +56,3 @@ func (a *App) evaluationHandler(w http.ResponseWriter, r *http.Request) {
 		Result:   result,
 	})
 }
-```[cite: 14]
