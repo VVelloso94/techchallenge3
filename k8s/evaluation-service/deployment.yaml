@@ -51,4 +51,4 @@ spec:
             - name: TARGETING_SERVICE_URL
               value: http://targeting-service:8004
             - name: REDIS_URL
-              value: "redis://evaluation-redis.tlcbzq.0001.use1.cache.amazonaws.com:6379"
+              value: "redis://evaluation-redis.txqavo.0001.use1.cache.amazonaws.com:6379"
