@@ -1,18 +1,4 @@
 #workflow for CI/CD of the analytics-service Python service 
-gitops-update:
-    name: 4. GitOps - Update Manifest Tag
-    needs: build-and-push
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-
 name: CI / DevSecOps - Python Service
 
 on:
@@ -126,6 +112,8 @@ jobs:
     needs: build-and-push
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
