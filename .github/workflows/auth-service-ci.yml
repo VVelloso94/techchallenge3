@@ -37,7 +37,7 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v4
         with:
-          version: v1.54.2
+          version: v1.63.4
           working-directory: ${{ env.SERVICE_NAME }}
 
   security-scan:
