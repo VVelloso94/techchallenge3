@@ -12,7 +12,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// App struct (para injeção de dependência)
+// App struct (Para injeção de dependência)
 type App struct {
 	DB        *sql.DB
 	MasterKey string
