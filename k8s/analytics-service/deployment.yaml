@@ -45,9 +45,7 @@ spec:
             - name: OTEL_SERVICE_NAME
               value: "analytics-service"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
-              value: "https://otlp.nr-data.net:4317" #
-            - name: OTEL_EXPORTER_OTLP_HEADERS
-              value: "api-key=3bfc814683918ce8184a3fb68f525a68bd37NRAL"
+              value: "http://otel-collector.techchallenge.svc.cluster.local:4317"
 
           readinessProbe:
             httpGet:

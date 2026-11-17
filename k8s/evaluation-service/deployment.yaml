@@ -45,16 +45,14 @@ spec:
             periodSeconds: 20
           env:
             - name: AUTH_SERVICE_URL
-              value: http://auth-service:8004
+              value: http://auth-service.techchallenge.svc.cluster.local:8080
             - name: FLAG_SERVICE_URL
-              value: http://flag-service:8004
+              value: http://flag-service.techchallenge.svc.cluster.local:5000
             - name: TARGETING_SERVICE_URL
-              value: http://targeting-service:8004
+              value: http://targeting-service.techchallenge.svc.cluster.local:8080
             - name: REDIS_URL
               value: "redis://evaluation-redis.txqavo.0001.use1.cache.amazonaws.com:6379"
             - name: OTEL_SERVICE_NAME
               value: "evaluation-service"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
-              value: "https://otlp.nr-data.net:4317" #
-            - name: OTEL_EXPORTER_OTLP_HEADERS
-              value: "api-key=3bfc814683918ce8184a3fb68f525a68bd37NRAL"
+              value: "http://otel-collector.techchallenge.svc.cluster.local:4317"
