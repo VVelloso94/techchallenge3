@@ -61,6 +61,8 @@ spec:
     metadata:
       labels:
         app: otel-collector
+      annotations:
+        checksum/config: "{{ .Values.otelConfigHash }}" #Força o Kubernetes a recriar o pod automaticamente se o configmap mudar
     spec:
       containers:
       - name: otel-collector
