@@ -20,6 +20,7 @@ func (a *App) healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) evaluationHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	reqCtx := r.Context()
 
 	// 1. Parsear os query parameters
 	userID := r.URL.Query().Get("user_id")
@@ -30,8 +31,8 @@ func (a *App) evaluationHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 2. Obter a decisão (lógica de cache/serviço está em evaluator.go)
-	result, err := a.getDecision(userID, flagName)
+	// 2. Obter a decisão propagando o contexto da requisição HTTP (spans filhos)
+	result, err := a.getDecision(reqCtx, userID, flagName)
 	if err != nil {
 		// Se o erro for "não encontrado", retornamos 'false' (comportamento seguro)
 		if _, ok := err.(*NotFoundError); ok {

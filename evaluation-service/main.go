@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -12,6 +13,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/go-redis/redis/v8"
 	"github.com/joho/godotenv"
+
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 )
 
 // Contexto global para o Redis
@@ -27,8 +36,65 @@ type App struct {
 	TargetingServiceURL string
 }
 
+// initTracer inicializa o provedor de rastreamento do OpenTelemetry via OTLP gRPC
+func initTracer(ctx context.Context) func(context.Context) error {
+	endpoint := os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+	if endpoint == "" {
+		endpoint = "otel-collector.techchallenge.svc.cluster.local:4317"
+	}
+	// Remove o prefixo http:// ou https:// caso esteja presente, pois o exporter gRPC espera host:porta
+	endpoint = strings.TrimPrefix(endpoint, "http://")
+	endpoint = strings.TrimPrefix(endpoint, "https://")
+
+	serviceName := os.Getenv("OTEL_SERVICE_NAME")
+	if serviceName == "" {
+		serviceName = "evaluation-service"
+	}
+
+	exporter, err := otlptracegrpc.New(ctx,
+		otlptracegrpc.WithInsecure(),
+		otlptracegrpc.WithEndpoint(endpoint),
+	)
+	if err != nil {
+		log.Fatalf("Falha ao criar o exportador OTLP: %v", err)
+	}
+
+	res, err := resource.New(ctx,
+		resource.WithAttributes(
+			semconv.ServiceNameKey.String(serviceName),
+		),
+	)
+	if err != nil {
+		log.Fatalf("Falha ao criar recurso OpenTelemetry: %v", err)
+	}
+
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exporter),
+		sdktrace.WithResource(res),
+	)
+
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{},
+		propagation.Baggage{},
+	))
+
+	log.Printf("OpenTelemetry inicializado (service=%s, endpoint=%s)", serviceName, endpoint)
+	return tp.Shutdown
+}
+
 func main() {
 	_ = godotenv.Load() // Carrega .env para dev local
+
+	// Inicializa OpenTelemetry
+	shutdownTracer := initTracer(ctx)
+	defer func() {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := shutdownTracer(shutdownCtx); err != nil {
+			log.Printf("Erro ao encerrar TracerProvider: %v", err)
+		}
+	}()
 
 	// --- Configuração ---
 	port := os.Getenv("PORT")
@@ -62,7 +128,7 @@ func main() {
 	}
 
 	// --- Inicializa Clientes ---
-	
+
 	// Cliente Redis
 	opt, err := redis.ParseURL(redisURL)
 	if err != nil {
@@ -85,9 +151,10 @@ func main() {
 		log.Println("Cliente SQS inicializado com sucesso.")
 	}
 
-	// Cliente HTTP (com timeout)
+	// Cliente HTTP instrumentado com OpenTelemetry (propaga headers W3C TraceContext)
 	httpClient := &http.Client{
-		Timeout: 5 * time.Second,
+		Transport: otelhttp.NewTransport(http.DefaultTransport),
+		Timeout:   5 * time.Second,
 	}
 
 	// Cria a instância da App
@@ -100,10 +167,10 @@ func main() {
 		TargetingServiceURL: targetingSvcURL,
 	}
 
-	// --- Rotas ---
+	// --- Rotas instrumentadas com OpenTelemetry ---
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health", app.healthHandler)
-	mux.HandleFunc("/evaluate", app.evaluationHandler)
+	mux.Handle("/health", otelhttp.NewHandler(http.HandlerFunc(app.healthHandler), "GET /health"))
+	mux.Handle("/evaluate", otelhttp.NewHandler(http.HandlerFunc(app.evaluationHandler), "GET /evaluate"))
 
 	log.Printf("Serviço de Avaliação (Go) rodando na porta %s", port)
 	if err := http.ListenAndServe(":"+port, mux); err != nil {

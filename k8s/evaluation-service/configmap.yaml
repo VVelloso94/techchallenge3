@@ -9,3 +9,4 @@ data:
   REDIS_PORT: "6379"
   AWS_SQS_URL: "https://sqs.us-east-1.amazonaws.com/123456789012/techchallenge2-queue"
   AWS_REGION: "us-east-1"
+  SERVICE_API_KEY: "tm_key_e3816c8b7543c303935009fc7b42454d1291b28ea226302e9fe774dc1138f067"
