@@ -26,6 +26,12 @@ data:
       otlphttp/loki:
         endpoint: "http://loki.techchallenge.svc.cluster.local:3100"
 
+      # Exportador de traces para a New Relic APM
+      otlp/newrelic:
+        endpoint: "otlp.nr-data.net:4317"  
+        headers:
+          api-key: "3bfc814683918ce8184a3fb68f525a68bd37NRAL"
+
     service:
       pipelines:
         metrics:
@@ -36,6 +42,10 @@ data:
           receivers: [otlp]
           processors: [batch]
           exporters: [otlphttp/loki]
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [otlp/newrelic]
 ---
 apiVersion: apps/v1
 kind: Deployment
