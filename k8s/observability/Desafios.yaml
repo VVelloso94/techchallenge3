@@ -1,0 +1,32 @@
+Desafios
+
+- No AWS Academy, não é permitido criar Roles ou Policies de IAM. Por isso, utilizamos o bloco data "aws_iam_role" "labrole" para consultar a role existente e atribuí-la ao EKS e aos Node Groups.  
+
+- NO AWS ACademy, a cada sessão tive que atualizar as credenciais no GitHub
+
+
+OBSERVAÇÃO
+
+Como isso funciona em ambientes de Produção vs. Desenvolvimento?
+Em Desenvolvimento / Tech Challenge (O que estamos a fazer):
+Usar ClusterIP + port-forward é a melhor prática. Evita que você exponha painéis administrativos altamente sensíveis (como o Grafana com senhas e o Argo CD que consegue controlar todo o cluster) publicamente na internet.
+
+Em Produção Real (Corporativo):
+Em vez de usar port-forward, as empresas configuram um Ingress Controller (como o AWS ALB Ingress ou NGINX Ingress) associado a um domínio (ex: grafana.seudominio.com) com certificados SSL/TLS (HTTPS) e regras de autenticação (como OAuth/SSO).
+
+
+
+1 - configurada as credenciais da conta
+2 - criação do bucket S3 para armazenar o estado do Terraform
+3- Atualize as credenciais do seu Kubernetes local para gerenciar o novo cluster
+4- Autentique o daemon do Docker local com o seu repositório privado do Amazon ECR
+5 - manifesto do Argo CD é extenso, o kubectl apply tradicional falha ao tentar gravar a configuração inteira na anotação do CRD applicationsets.argoproj.io.
+6 - O conflito de gerenciamento (conflict with kubectl-client-side-apply) ocorre porque os recursos foram parcial ou totalmente criados no passo anterior via client-side apply, impedindo que o server-side apply assuma o controle dos campos sem uma autorização explícita.
+7 - O Argo CD não lê subpastas por padrão. Precisa ativar a opção directory.recurse: true no manifesto da Application do Argo CD
+8 - MaterKEY mapeiam essa chave para todos os serviços, a ausência dela na Secret do Kubernetes impede a subida de toda a aplicação.
+
+
+- diversas vulnerabilidades de segurança tiveram que ser corrigidas
+- Necessidade de alteração de imagem base do go e go mod
+- atualização do golangci-lint nos workflows do auth-service e evaluation-service de v1.54.2 para v1.64.0
+- Problemas com import "io/ioutil"

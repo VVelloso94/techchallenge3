@@ -52,3 +52,9 @@ spec:
               value: http://targeting-service:8004
             - name: REDIS_URL
               value: "redis://evaluation-redis.txqavo.0001.use1.cache.amazonaws.com:6379"
+            - name: OTEL_SERVICE_NAME
+              value: "evaluation-service"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "https://otlp.nr-data.net:4317" #
+            - name: OTEL_EXPORTER_OTLP_HEADERS
+              value: "api-key=3bfc814683918ce8184a3fb68f525a68bd37NRAL"

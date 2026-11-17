@@ -53,3 +53,9 @@ spec:
               value: http://auth-service:8080
             - name: FLAG_SERVICE_URL
               value: http://flag-service:8080
+            - name: OTEL_SERVICE_NAME
+              value: "targeting-service"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "https://otlp.nr-data.net:4317" #
+            - name: OTEL_EXPORTER_OTLP_HEADERS
+              value: "api-key=3bfc814683918ce8184a3fb68f525a68bd37NRAL"
