@@ -21,14 +21,12 @@ app = Flask(__name__)
 # --- Configuração ---
 DATABASE_URL = os.getenv("DATABASE_URL")
 AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL")
-MASTER_KEY = os.getenv("MASTER_KEY")
 
 if not DATABASE_URL or not AUTH_SERVICE_URL:
     log.critical("Erro: DATABASE_URL e AUTH_SERVICE_URL devem ser definidos.")
     sys.exit(1)
 
 # --- Pool de Conexão com o Banco ---
-# Inicializa o pool de conexões (Mín: 1, Máx: 5 conexões)
 try:
     pool = SimpleConnectionPool(1, 5, dsn=DATABASE_URL)
     log.info("Pool de conexões com o PostgreSQL inicializado.")
@@ -38,22 +36,15 @@ except psycopg2.OperationalError as e:
 
 # --- Middleware de Autenticação ---
 def require_auth(f):
-    """ Middleware para validar a chave de API (ou Master Key) contra o auth-service """
+    """ Middleware para validar a chave de API contra o auth-service """
     @wraps(f)
     def decorated(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
         if not auth_header:
             return jsonify({"error": "Authorization header obrigatório"}), 401
         
-        # Extrai o token do cabeçalho
-        token = auth_header.replace("Bearer ", "").strip()
-        
-        # Se a chave enviada corresponder à MASTER_KEY, autoriza imediatamente
-        if MASTER_KEY and token == MASTER_KEY:
-            return f(*args, **kwargs)
-        
         try:
-            # Caso contrário, chama o /validate do auth-service
+            # Chama o /validate do auth-service
             validate_url = f"{AUTH_SERVICE_URL}/validate"
             response = requests.get(validate_url, headers={"Authorization": auth_header}, timeout=3)
             
@@ -63,12 +54,11 @@ def require_auth(f):
         
         except requests.exceptions.Timeout:
             log.error("Timeout ao conectar com o auth-service")
-            return jsonify({"error": "Serviço de autenticação indisponível (timeout)"}), 504 # Gateway Timeout
+            return jsonify({"error": "Serviço de autenticação indisponível (timeout)"}), 504
         except requests.exceptions.RequestException as e:
             log.error(f"Erro ao conectar com o auth-service: {e}")
-            return jsonify({"error": "Serviço de autenticação indisponível"}), 503 # Service Unavailable
+            return jsonify({"error": "Serviço de autenticação indisponível"}), 503
 
-        # Se a chave for válida, continua para a rota
         return f(*args, **kwargs)
     return decorated
 
@@ -159,7 +149,7 @@ def get_flag(name):
 @app.route('/flags/<string:name>', methods=['PUT'])
 @require_auth
 def update_flag(name):
-    """ Atualiza uma feature flag (descrição ou status 'is_enabled') """
+    """ Atualiza uma feature flag """
     data = request.get_json()
     if not data:
         return jsonify({"error": "Corpo da requisição obrigatório"}), 400
@@ -167,7 +157,6 @@ def update_flag(name):
     fields = []
     values = []
     
-    # Constrói a query dinamicamente
     if 'description' in data:
         fields.append("description = %s")
         values.append(data['description'])
@@ -178,8 +167,7 @@ def update_flag(name):
     if not fields:
         return jsonify({"error": "Pelo menos um campo ('description', 'is_enabled') é obrigatório"}), 400
     
-    values.append(name) # Adiciona o 'name' para a cláusula WHERE
-    
+    values.append(name)
     query = f"UPDATE flags SET {', '.join(fields)} WHERE name = %s RETURNING *"
     
     conn = None
@@ -220,7 +208,7 @@ def delete_flag(name):
             
         conn.commit()
         log.info(f"Flag '{name}' deletada com sucesso.")
-        return "", 204 # 204 No Content
+        return "", 204
     except Exception as e:
         if conn: conn.rollback()
         log.error(f"Erro ao deletar flag '{name}': {e}")
