@@ -57,4 +57,3 @@ spec:
               value: "targeting-service"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: "http://otel-collector.techchallenge.svc.cluster.local:4317"
-```[cite: 17, 18, 19, 20, 21]
