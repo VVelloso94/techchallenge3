@@ -21,6 +21,7 @@ app = Flask(__name__)
 # --- Configuração ---
 DATABASE_URL = os.getenv("DATABASE_URL")
 AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL")
+MASTER_KEY = os.getenv("MASTER_KEY")
 
 if not DATABASE_URL or not AUTH_SERVICE_URL:
     log.critical("Erro: DATABASE_URL e AUTH_SERVICE_URL devem ser definidos.")
@@ -37,15 +38,22 @@ except psycopg2.OperationalError as e:
 
 # --- Middleware de Autenticação ---
 def require_auth(f):
-    """ Middleware para validar a chave de API contra o auth-service """
+    """ Middleware para validar a chave de API (ou Master Key) contra o auth-service """
     @wraps(f)
     def decorated(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
         if not auth_header:
             return jsonify({"error": "Authorization header obrigatório"}), 401
         
+        # Extrai o token do cabeçalho
+        token = auth_header.replace("Bearer ", "").strip()
+        
+        # Se a chave enviada corresponder à MASTER_KEY, autoriza imediatamente
+        if MASTER_KEY and token == MASTER_KEY:
+            return f(*args, **kwargs)
+        
         try:
-            # Chama o /validate do auth-service
+            # Caso contrário, chama o /validate do auth-service
             validate_url = f"{AUTH_SERVICE_URL}/validate"
             response = requests.get(validate_url, headers={"Authorization": auth_header}, timeout=3)
             
