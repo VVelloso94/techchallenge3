@@ -20,7 +20,7 @@ spec:
           image: 109420432998.dkr.ecr.us-east-1.amazonaws.com/targeting-service:15701fcc9c0a91ab760dd9b0b5dd14628c9668d6
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 5001
           envFrom:
             - configMapRef:
                 name: targeting-service-config
@@ -34,13 +34,13 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: 8080
+              port: 5001
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /health
-              port: 8080
+              port: 5001
             initialDelaySeconds: 15
             periodSeconds: 20
           env:
@@ -50,9 +50,9 @@ spec:
                   name: app-secrets
                   key: DB_TARGETING_URL
             - name: AUTH_SERVICE_URL
-              value: http://auth-service.techchallenge.svc.cluster.local:8080
+              value: http://auth-service:8080
             - name: FLAG_SERVICE_URL
-              value: http://flag-service.techchallenge.svc.cluster.local:5000
+              value: http://flag-service:5000
             - name: OTEL_SERVICE_NAME
               value: "targeting-service"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
