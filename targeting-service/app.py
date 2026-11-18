@@ -7,6 +7,15 @@ from psycopg2.extras import RealDictCursor, Json
 from psycopg2.pool import SimpleConnectionPool
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+from opentelemetry import trace
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
+
 from functools import wraps
 import logging
 
@@ -18,6 +27,18 @@ log = logging.getLogger(__name__)
 load_dotenv() 
 
 app = Flask(__name__)
+
+# --- OpenTelemetry Setup ---
+service_name = os.getenv("OTEL_SERVICE_NAME", "python-service")
+otel_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://otel-collector.techchallenge.svc.cluster.local:4317")
+resource = Resource.create({"service.name": service_name})
+provider = TracerProvider(resource=resource)
+provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint=otel_endpoint, insecure=True)))
+trace.set_tracer_provider(provider)
+FlaskInstrumentor().instrument_app(app)
+RequestsInstrumentor().instrument()
+Psycopg2Instrumentor().instrument()
+
 
 # --- Configuração ---
 DATABASE_URL = os.getenv("DATABASE_URL")
