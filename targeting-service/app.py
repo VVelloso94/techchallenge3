@@ -14,7 +14,6 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
 
 from functools import wraps
 import logging
@@ -37,7 +36,6 @@ provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint=otel_en
 trace.set_tracer_provider(provider)
 FlaskInstrumentor().instrument_app(app)
 RequestsInstrumentor().instrument()
-Psycopg2Instrumentor().instrument()
 
 
 # --- Configuração ---
