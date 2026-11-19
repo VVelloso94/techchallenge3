@@ -20,15 +20,15 @@ data:
           store: inmemory
     schema_config:
       configs:
-        - from: 2020-01-01
-          store: boltdb-shipper
+        - from: 2024-01-01
+          store: tsdb
           object_store: filesystem
-          schema: v11
+          schema: v13
           index:
             prefix: index_
             period: 24h
-    ruler:
-      alertmanager_url: http://localhost:9093
+    limits_config:
+      allow_structured_metadata: false
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -48,9 +48,8 @@ spec:
       containers:
       - name: loki
         image: grafana/loki:latest
-        args: 
+        args:
           - "-config.file=/etc/loki/loki.yaml"
-          - "-validation.allow-structured-metadata=false"
         volumeMounts:
         - name: config
           mountPath: /etc/loki
@@ -61,16 +60,3 @@ spec:
       - name: config
         configMap:
           name: loki-config
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: loki
-  namespace: techchallenge
-spec:
-  ports:
-  - port: 3100
-    targetPort: 3100
-    name: http
-  selector:
-    app: loki

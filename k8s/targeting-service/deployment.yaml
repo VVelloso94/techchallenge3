@@ -20,7 +20,7 @@ spec:
           image: 109420432998.dkr.ecr.us-east-1.amazonaws.com/targeting-service:15701fcc9c0a91ab760dd9b0b5dd14628c9668d6
           imagePullPolicy: Always
           ports:
-            - containerPort: 5001
+            - containerPort: 8080
           envFrom:
             - configMapRef:
                 name: targeting-service-config
@@ -34,13 +34,13 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: 5001
+              port: 8080
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /health
-              port: 5001
+              port: 8080
             initialDelaySeconds: 15
             periodSeconds: 20
           env:

@@ -14,6 +14,10 @@ data:
             endpoint: 0.0.0.0:4318
 
     processors:
+      memory_limiter:
+        check_interval: 1s
+        limit_percentage: 75
+        spike_limit_percentage: 20
       batch:
         timeout: 1s
         send_batch_size: 1024
@@ -21,31 +25,33 @@ data:
     exporters:
       prometheus:
         endpoint: "0.0.0.0:8889"
-      
-      # Exportador de logs para o Loki interno
       otlp_http/loki:
-        endpoint: "http://loki.techchallenge.svc.cluster.local:3100"
+        endpoint: "http://loki.techchallenge.svc.cluster.local:3100/otlp"
 
       # Exportador de traces para a New Relic APM
       otlp_grpc/newrelic:
         endpoint: "otlp.nr-data.net:4317"
         headers:
           api-key: "3bfc814683918ce8184a3fb68f525a68bd37NRAL"
-
+    connectors:
+      spanmetrics:
+        histogram:
+          explicit:
+            buckets: [100us, 1ms, 2ms, 6ms, 10ms, 100ms, 250ms, 1s]
     service:
       pipelines:
         metrics:
           receivers: [otlp]
-          processors: [batch]
+          processors: [memory_limiter, batch]
           exporters: [prometheus]
         logs:
           receivers: [otlp]
-          processors: [batch]
+          processors: [memory_limiter, batch]
           exporters: [otlp_http/loki]
         traces:
           receivers: [otlp]
-          processors: [batch]
-          exporters: [otlp_grpc/newrelic]
+          processors: [memory_limiter, batch]
+          exporters: [spanmetrics,otlp_grpc/newrelic]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -61,8 +67,6 @@ spec:
     metadata:
       labels:
         app: otel-collector
-      annotations:
-        checksum/config: "{{ .Values.otelConfigHash }}" #Força o Kubernetes a recriar o pod automaticamente se o configmap mudar
     spec:
       containers:
       - name: otel-collector

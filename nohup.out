@@ -1,1 +1,2 @@
 error: Service auth-service does not have a service port 8001
+error: Service grafana does not have a service port 80

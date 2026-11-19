@@ -1,0 +1,26 @@
+name: Self-Healing auth-service
+
+on:
+  repository_dispatch:
+    types: [self-healing-auth]
+  workflow_dispatch:
+
+jobs:
+  restart-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region us-east-1 --name <NOME_DO_SEU_CLUSTER_EKS>
+
+      - name: Rollout Restart auth-service
+        run: |
+          kubectl rollout restart deployment/auth-service -n techchallenge
+          kubectl rollout status deployment/auth-service -n techchallenge --timeout=120s

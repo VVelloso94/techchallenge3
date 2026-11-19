@@ -1,0 +1,291 @@
+Forwarding from 127.0.0.1:3000 -> 3000
+Forwarding from [::1]:3000 -> 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+E1117 22:59:29.064917 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:49732: write tcp6 [::1]:3000->[::1]:49732: write: broken pipe"
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+E1117 22:59:31.409570 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:36954: write tcp6 [::1]:3000->[::1]:36954: write: broken pipe"
+E1117 22:59:31.417041 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:49716: write tcp6 [::1]:3000->[::1]:49716: write: broken pipe"
+E1117 22:59:32.312701 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:49744: write tcp6 [::1]:3000->[::1]:49744: write: broken pipe"
+E1117 22:59:32.536225 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:36962: write tcp6 [::1]:3000->[::1]:36962: write: broken pipe"
+E1117 22:59:32.536281 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:49722: write tcp6 [::1]:3000->[::1]:49722: write: broken pipe"
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+E1118 21:59:33.372489 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:46044: write tcp6 [::1]:3000->[::1]:46044: write: broken pipe"
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+E1118 22:27:06.169859 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:54518: write tcp6 [::1]:3000->[::1]:54518: write: broken pipe"
+E1118 22:27:08.604497 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:54536: write tcp6 [::1]:3000->[::1]:54536: write: broken pipe"
+E1118 22:27:29.449028 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:54520: write tcp6 [::1]:3000->[::1]:54520: write: broken pipe"
+E1118 22:29:25.753783 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:41098: write tcp6 [::1]:3000->[::1]:41098: write: broken pipe"
+Handling connection for 3000
+Handling connection for 3000
+E1118 22:33:46.445183 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:53186: write tcp6 [::1]:3000->[::1]:53186: write: broken pipe"
+Handling connection for 3000
+E1118 22:35:32.302394 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:53188: write tcp6 [::1]:3000->[::1]:53188: write: broken pipe"
+Handling connection for 3000
+Handling connection for 3000
+E1118 22:35:54.324117 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:40734: write tcp6 [::1]:3000->[::1]:40734: write: broken pipe"
+Handling connection for 3000
+E1118 22:35:54.664003 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:50172: write tcp6 [::1]:3000->[::1]:50172: write: broken pipe"
+E1118 22:35:54.951728 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:50192: write tcp6 [::1]:3000->[::1]:50192: write: broken pipe"
+Handling connection for 3000
+E1118 22:35:58.286705 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:50176: write tcp6 [::1]:3000->[::1]:50176: write: broken pipe"
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+E1118 22:36:35.161809 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:49312: write tcp6 [::1]:3000->[::1]:49312: write: broken pipe"
+E1118 22:36:37.265905 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:49322: write tcp6 [::1]:3000->[::1]:49322: write: broken pipe"
+E1118 22:36:37.971286 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:50206: write tcp6 [::1]:3000->[::1]:50206: write: broken pipe"
+E1118 22:37:07.357163 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:49928: write tcp6 [::1]:3000->[::1]:49928: write: broken pipe"
+Handling connection for 3000
+Handling connection for 3000
+E1118 22:37:14.626074 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:49326: write tcp6 [::1]:3000->[::1]:49326: write: broken pipe"
+Handling connection for 3000
+E1118 22:37:14.946329 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:36160: write tcp6 [::1]:3000->[::1]:36160: write: broken pipe"
+E1118 22:37:15.208521 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:36166: write tcp6 [::1]:3000->[::1]:36166: write: broken pipe"
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+E1118 22:37:17.828374 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:36180: write tcp6 [::1]:3000->[::1]:36180: write: broken pipe"
+E1118 22:37:18.029894 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:36202: write tcp6 [::1]:3000->[::1]:36202: write: broken pipe"
+Handling connection for 3000
+E1118 22:37:21.142181 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:36192: write tcp6 [::1]:3000->[::1]:36192: write: broken pipe"
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+E1118 22:38:38.003273 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:36204: write tcp6 [::1]:3000->[::1]:36204: write: broken pipe"
+E1118 22:38:38.026578 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:39928: write tcp6 [::1]:3000->[::1]:39928: write: broken pipe"
+E1118 22:38:38.055185 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:60262: write tcp6 [::1]:3000->[::1]:60262: write: broken pipe"
+E1118 22:38:38.142880 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:60278: write tcp6 [::1]:3000->[::1]:60278: write: broken pipe"
+E1118 22:38:38.192157 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:60292: write tcp6 [::1]:3000->[::1]:60292: write: broken pipe"
+E1118 22:38:38.223207 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:60294: write tcp6 [::1]:3000->[::1]:60294: write: broken pipe"
+E1118 22:38:38.360064 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:60310: write tcp6 [::1]:3000->[::1]:60310: write: broken pipe"
+Handling connection for 3000
+E1118 22:38:40.627369 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:60316: write tcp6 [::1]:3000->[::1]:60316: write: broken pipe"
+Handling connection for 3000
+Handling connection for 3000
+E1118 22:39:10.367811 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:35878: write tcp6 [::1]:3000->[::1]:35878: write: broken pipe"
+Handling connection for 3000
+Handling connection for 3000
+E1118 22:40:48.224762 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:60320: write tcp6 [::1]:3000->[::1]:60320: write: broken pipe"
+E1118 22:40:48.567159 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:49646: write tcp6 [::1]:3000->[::1]:49646: write: broken pipe"
+Handling connection for 3000
+Handling connection for 3000
+E1118 22:40:51.279114 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:49658: write tcp6 [::1]:3000->[::1]:49658: write: broken pipe"
+E1118 22:40:51.311345 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:35884: write tcp6 [::1]:3000->[::1]:35884: write: broken pipe"
+Handling connection for 3000
+E1118 22:40:51.720924 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:49676: write tcp6 [::1]:3000->[::1]:49676: write: broken pipe"
+Handling connection for 3000
+Handling connection for 3000
