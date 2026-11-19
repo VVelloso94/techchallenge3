@@ -1,0 +1,226 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: self-healing-webhook
+  namespace: techchallenge
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: self-healing-restart-deployments
+  namespace: techchallenge
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: self-healing-restart-deployments
+  namespace: techchallenge
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: self-healing-restart-deployments
+subjects:
+  - kind: ServiceAccount
+    name: self-healing-webhook
+    namespace: techchallenge
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: self-healing-script
+  namespace: techchallenge
+data:
+  app.py: |
+    import datetime
+    import json
+    import os
+    import ssl
+    import urllib.request
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+    from urllib.parse import parse_qs, urlparse
+
+    NAMESPACE = os.getenv("TARGET_NAMESPACE", "techchallenge")
+    DEFAULT_DEPLOYMENT = os.getenv("TARGET_DEPLOYMENT", "auth-service")
+    TOKEN_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+    CA_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+
+
+    def trigger_rollout_restart(deployment_name: str):
+        with open(TOKEN_PATH, "r", encoding="utf-8") as f:
+            token = f.read().strip()
+
+        ctx = ssl.create_default_context(cafile=CA_PATH)
+        url = (
+            f"https://kubernetes.default.svc/apis/apps/v1/namespaces/"
+            f"{NAMESPACE}/deployments/{deployment_name}"
+        )
+        body = json.dumps({
+            "spec": {
+                "template": {
+                    "metadata": {
+                        "annotations": {
+                            "kubectl.kubernetes.io/restartedAt": datetime.datetime.utcnow().isoformat() + "Z"
+                        }
+                    }
+                }
+            }
+        }).encode("utf-8")
+
+        req = urllib.request.Request(
+            url,
+            data=body,
+            method="PATCH",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/strategic-merge-patch+json",
+                "Accept": "application/json",
+            },
+        )
+        try:
+            with urllib.request.urlopen(req, context=ctx, timeout=15) as resp:
+                return resp.status, f"deployment.apps/{deployment_name} restarted", ""
+        except Exception as exc:
+            return 500, "", str(exc)
+
+
+    class Handler(BaseHTTPRequestHandler):
+        def _send_json(self, code: int, payload: dict):
+            raw = json.dumps(payload).encode("utf-8")
+            self.send_response(code)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(raw)))
+            self.end_headers()
+            self.wfile.write(raw)
+
+        def do_GET(self):
+            if self.path.startswith("/health"):
+                self._send_json(200, {"status": "ok", "namespace": NAMESPACE})
+            else:
+                self._send_json(404, {"error": "not found"})
+
+        def do_POST(self):
+            parsed = urlparse(self.path)
+            if parsed.path != "/webhook":
+                self._send_json(404, {"error": "not found"})
+                return
+
+            length = int(self.headers.get("Content-Length", "0"))
+            raw_body = self.rfile.read(length) if length > 0 else b"{}"
+            try:
+                payload = json.loads(raw_body.decode("utf-8"))
+            except Exception:
+                payload = {}
+
+            query_params = parse_qs(parsed.query)
+            alerts = payload.get("alerts", [])
+            status = payload.get("status", "firing")
+
+            if not alerts:
+                deployment = (
+                    (query_params.get("deployment") or [None])[0]
+                    or payload.get("deployment")
+                    or DEFAULT_DEPLOYMENT
+                )
+                code, out, err = trigger_rollout_restart(deployment)
+                self._send_json(200 if code in (200, 201) else 500, {
+                    "triggered": True,
+                    "mode": "direct",
+                    "deployment": deployment,
+                    "status_code": code,
+                    "stdout": out,
+                    "stderr": err,
+                    "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+                })
+                return
+
+            results = []
+            for alert in alerts:
+                alert_status = alert.get("status", status)
+                labels = alert.get("labels", {})
+                deployment = labels.get("deployment") or labels.get("app") or DEFAULT_DEPLOYMENT
+
+                if alert_status == "firing":
+                    code, out, err = trigger_rollout_restart(deployment)
+                    results.append({
+                        "alertname": labels.get("alertname", "unknown"),
+                        "status": alert_status,
+                        "deployment": deployment,
+                        "status_code": code,
+                        "stdout": out,
+                        "stderr": err,
+                    })
+                else:
+                    results.append({
+                        "alertname": labels.get("alertname", "unknown"),
+                        "status": alert_status,
+                        "deployment": deployment,
+                        "skipped": True,
+                    })
+
+            self._send_json(200, {
+                "triggered": True,
+                "results": results,
+                "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            })
+
+        def log_message(self, format, *args):
+            return
+
+
+    if __name__ == "__main__":
+        server = HTTPServer(("0.0.0.0", 5000), Handler)
+        server.serve_forever()
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: self-healing-webhook
+  namespace: techchallenge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: self-healing-webhook
+  template:
+    metadata:
+      labels:
+        app: self-healing-webhook
+    spec:
+      serviceAccountName: self-healing-webhook
+      containers:
+        - name: webhook
+          image: python:3.11-slim
+          command: ["python", "/app/app.py"]
+          env:
+            - name: TARGET_NAMESPACE
+              value: "techchallenge"
+            - name: TARGET_DEPLOYMENT
+              value: "auth-service"
+          ports:
+            - containerPort: 5000
+              name: http
+          volumeMounts:
+            - name: script
+              mountPath: /app
+      volumes:
+        - name: script
+          configMap:
+            name: self-healing-script
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: self-healing-webhook
+  namespace: techchallenge
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5000
+      targetPort: 5000
+      name: http
+  selector:
+    app: self-healing-webhook

@@ -289,3 +289,13 @@ Handling connection for 3000
 E1118 22:40:51.720924 1277806 portforward.go:489] "Unhandled Error" err="error copying from remote stream to local connection: readfrom tcp6 [::1]:3000->[::1]:49676: write tcp6 [::1]:3000->[::1]:49676: write: broken pipe"
 Handling connection for 3000
 Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
+Handling connection for 3000
